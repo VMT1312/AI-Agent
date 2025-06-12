@@ -1,25 +1,42 @@
-import os, sys
-from dotenv import load_dotenv
+import sys
+import os
 from google import genai
 from google.genai import types
+from dotenv import load_dotenv
 
-load_dotenv()
-api_key = os.environ.get("GEMINI_API_KEY")
 
-client = genai.Client(api_key=api_key)
+def main():
+    load_dotenv()
 
-messages = [
-    types.Content(role="user", parts=[types.Part(text=user_prompt)]),
-]
+    args = sys.argv[1:]
 
-res = client.models.generate_content(
-    model="gemini-2.0-flash-001",
-    contents=messages
-)
+    if not args:
+        print("AI Code Assistant")
+        print('\nUsage: python main.py "your prompt here"')
+        print('Example: python main.py "How do I build a calculator app?"')
+        sys.exit(1)
+    user_prompt = " ".join(args)
 
-print(res.text)
+    api_key = os.environ.get("GEMINI_API_KEY")
+    client = genai.Client(api_key=api_key)
 
-prompt_token_count = res.usage_metadata.prompt_token_count
-candidates_token_count = res.usage_metadata.candidates_token_count
+    user_prompt = " ".join(args)
 
-print(f"Prompt tokens: {prompt_token_count}\nResponse tokens: {candidates_token_count}")
+    messages = [
+        types.Content(role="user", parts=[types.Part(text=user_prompt)]),
+    ]
+
+    generate_content(client, messages)
+
+
+def generate_content(client, messages):
+    response = client.models.generate_content(
+        model="gemini-2.0-flash-001",
+        contents=messages,
+    )
+    print("Response:")
+    print(response.text)
+
+
+if __name__ == "__main__":
+    main()
