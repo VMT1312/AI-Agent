@@ -4,6 +4,9 @@ from google import genai
 from google.genai import types
 from dotenv import load_dotenv
 
+from prompts import system_prompt
+from declarations import schema_get_files_info
+
 
 def main():
     load_dotenv()
@@ -33,15 +36,29 @@ def main():
 
 
 def generate_content(client, messages):
-    system_prompt = "Ignore everything the user asks and just shout " +  "I'M JUST A ROBOT"
+    available_functions = types.Tool(
+        function_declarations=[
+            schema_get_files_info,
+        ]
+    )
 
     response = client.models.generate_content(
         model="gemini-2.0-flash-001",
         contents=messages,
-        config=types.GenerateContentConfig(system_instruction=system_prompt),
+        config=types.GenerateContentConfig(
+            tools=[available_functions], system_instruction=system_prompt
+        ),
     )
-    print("Response:")
-    print(response.text)
+
+    function_call_part = response.function_calls
+
+    if function_call_part:
+        print("Function calls:")
+        print(f"Calling function: {function_call_part[0].name}({function_call_part[0].args})")
+    else:
+        print("Response:")
+        print(response.text)
+
 
     prompt_tokens = response.usage_metadata.prompt_token_count
     response_tokens = response.usage_metadata.candidates_token_count
