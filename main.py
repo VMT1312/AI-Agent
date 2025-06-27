@@ -5,7 +5,7 @@ from google.genai import types
 from dotenv import load_dotenv
 
 from prompts import system_prompt
-from declarations import schema_get_files_info
+from declarations import *
 
 
 def main():
@@ -39,6 +39,9 @@ def generate_content(client, messages):
     available_functions = types.Tool(
         function_declarations=[
             schema_get_files_info,
+            schema_get_file_content,
+            scheme_run_python_file,
+            schema_write_file,
         ]
     )
 
