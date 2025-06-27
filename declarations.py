@@ -16,19 +16,20 @@ schema_get_files_info = types.FunctionDeclaration(
 
 schema_get_file_content = types.FunctionDeclaration(
     name="get_file_content",
-    description="Retrieves the content of a specified file, constrained to the working directory.",
+    description=f"Reads and returns the first 10000 characters of the content from a specified file within the working directory.",
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
             "file_path": types.Schema(
                 type=types.Type.STRING,
-                description="The path to the file to retrieve, relative to the working directory.",
+                description="The path to the file whose content should be read, relative to the working directory.",
             ),
         },
+        required=["file_path"],
     ),
 )
 
-scheme_run_python_file = types.FunctionDeclaration(
+schema_run_python_file = types.FunctionDeclaration(
     name="run_python_file",
     description="Runs a Python file in the specified working directory and returns its output.",
     parameters=types.Schema(
@@ -44,18 +45,19 @@ scheme_run_python_file = types.FunctionDeclaration(
 
 schema_write_file = types.FunctionDeclaration(
     name="write_file",
-    description="Writes content to a specified file, creating it if it does not exist, constrained to the working directory.",
+    description="Writes content to a file within the working directory. Creates the file if it doesn't exist.",
     parameters=types.Schema(
         type=types.Type.OBJECT,
         properties={
             "file_path": types.Schema(
                 type=types.Type.STRING,
-                description="The path to the file to write to, relative to the working directory.",
+                description="Path to the file to write, relative to the working directory.",
             ),
             "content": types.Schema(
                 type=types.Type.STRING,
-                description="The content to write to the file.",
+                description="Content to write to the file",
             ),
         },
+        required=["file_path", "content"],
     ),
 )
